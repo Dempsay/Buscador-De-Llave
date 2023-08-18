@@ -1,0 +1,187 @@
+<!DOCTYPE>
+<html>
+ <head>
+  <meta charste="utf-8">  
+  <style>
+    body{
+        background-image: url(fondo3.jpg);
+    }
+   .tablero{
+    width: 500px;
+    height: 500px;        
+    border: hidden;
+    margin-left: 32%;
+    margin-top: -50px;
+        
+   }
+
+   .tablero div{
+    width: 50px;
+    height: 50px;
+    border:hidden;
+    float: left;
+    background-image: url(candado.png);    
+    font-size: 30; 
+    text-align: center;
+   }
+  </style>
+  <script>
+
+   var minas = inicializaMatriz(); 
+
+   function inicializaMatriz(){
+    var tabla = [];
+    for(var i = 0; i < 10; i++){           
+           tabla[i] = [0,0,0,0,0,0,0,0];           
+       }
+       return tabla;
+   }  
+
+   function crearTablero(){
+    for(var i = 0; i < 10; i++){
+           for(var j = 0; j < 8; j++){              
+              var div = document.createElement("div");
+               div.id = i + "" + j;               
+               div.addEventListener("click",mostrarNumero, true);               
+               tablerominas.appendChild(div);
+           }
+       }      
+       
+   }
+
+   function mostrarNumero(e){
+    var auxstr = this.id.split("");    
+    var myid = auxstr[0] + auxstr[1];   
+    divObj = document.getElementById(myid);
+
+
+    if(minas[parseInt(auxstr[0],10)][parseInt(auxstr[1],10)] == 0){
+     divObj.style.backgroundImage = "url(fondo3.jpg)";     
+     abrirAlrededor(parseInt(auxstr[0],10),parseInt(auxstr[1],10),minas);
+    }else{
+     if(minas[parseInt(auxstr[0],10)][parseInt(auxstr[1],10)] != "*"){
+      document.getElementById(myid).innerHTML = "<p style='margin-top:15px;'>" + minas[parseInt(auxstr[0],10)][parseInt(auxstr[1],10)] + "</p>";
+      divObj.style.backgroundColor = "white";
+     }else{
+      //ACA ESTA LA LLAVE GORRIADO
+      divObj.style.backgroundImage = "url(llave.png)";      
+      abrirTablero(minas);
+      alert("HAS ABIERTO EL CANDADO GANASTE!!!!!");
+     }
+    }      
+   }    
+
+   function bombasAlrededor(tablero){
+    for(var i = 0; i < 8; i++){
+           for(var j = 0; j < 8; j++){              
+              if(tablero[i][j] == "*"){
+                if(i == 0 && j == 0){
+                 colocaNumeroBombas(i, j, i + 1, j + 1,tablero);
+                }
+                else if (i == 0 && (j > 0 && j < 7)) {
+                 colocaNumeroBombas(i, j - 1, i + 1, j + 1,tablero);
+                }
+                else if(i == 0 && j == 7){
+                 colocaNumeroBombas(i, j - 1, i + 1, j,tablero);
+                }
+                else if(j == 7 && (i > 0 && i < 7)){
+                 colocaNumeroBombas(i - 1, j - 1, i + 1, j,tablero);
+                }
+                else if(i == 7 && j == 7){
+                 colocaNumeroBombas(i - 1, j - 1, i, j,tablero);
+                }
+                else if(i == 7 && (j > 0 && j < 7)){
+                 colocaNumeroBombas(i - 1, j - 1, i, j + 1,tablero);
+                }
+                else if(i == 7 && j == 0){
+                 colocaNumeroBombas(i - 1, j, i, j + 1,tablero);
+                }
+                else if(j == 0 && (i > 0 && i < 7)){
+                 colocaNumeroBombas(i - 1, j, i + 1, j + 1,tablero);
+                }else{
+                 colocaNumeroBombas(i - 1, j - 1, i + 1, j + 1,tablero);
+                }
+              }
+           }
+       }
+   }
+   function generarBombas(tablero){
+    var fil = 0;
+    var col = 0;
+
+    fil = Math.floor((Math.random()*7)+0);
+    col = Math.floor((Math.random()*7)+0);
+
+    for(var i = 0; i < 7; i++){
+     while (tablero[fil][col] == "*"){
+      fil = Math.floor((Math.random()*7)+0);
+      col = Math.floor((Math.random()*7)+0);
+     }
+     tablero[fil][col] = "*";   
+    }
+   }
+
+   function abrirCeros(vari,varj,fini,finj,cori,corj,tablero){
+    for(var i = vari; i <= fini; i++){
+           for(var j = varj; j <= finj; j++){  
+            var myid = i+""+j;
+            var objDiv =  document.getElementById(myid)            
+              if(objDiv.textContent == ""){                
+                if(tablero[i][j] == 0){                 
+                 if(i == cori && j == corj){                  
+                  objDiv.textContent = "" ; 
+                  objDiv.style.backgroundColor = "white";               
+                 }else{
+                  if(objDiv.style.backgroundColor != "white"){
+                   abrirAlrededor(i, j,tablero);
+                  }                  
+                 }
+
+                }else{
+                 if(tablero[i][j] != "*"){
+                  document.getElementById(myid).innerHTML = "<p style='margin-top:15px;'>" + tablero[i][j] + "</p>"; 
+                  objDiv.style.backgroundColor = "white"; 
+                 }
+                }                              
+              }              
+           }
+       }
+   }
+   function abrirTablero(tablero){
+    for(var i = 0; i < 8; i++){
+           for(var j = 0; j < 8; j++){ 
+            var myid = i+""+j;
+            var objDiv =  document.getElementById(myid);             
+              if(tablero[i][j] == "*"){             
+                objDiv.style.backgroundImage = "candado(1).png";
+              }
+           }
+       }
+   }   
+  </script>
+ </head>
+ <body onload="cargarTablero();"><CENTER><h1 style="margin-top: 10px;"><img src="Titulo.png" alt=""></H1></CENTER>
+  <div id="tablerominas" class="tablero">
+
+  </div>
+  <div>
+    <img src="secretos ocultos.png" alt="" style="position: absolute; margin-top: -380px; margin-right: 80%; width: 350px;">
+  </div>
+  <div>
+    <img src="polo universitario.png" alt="" style="position: absolute;margin-top: -200; margin-left: 75%; width: 300px;">
+  </div>
+  <div>
+    <img src="EDUCACION ODS.png" alt="" style="position: absolute; margin-top: -600; margin-left: 75%; width: 300px;">
+  </div>
+ </body>
+
+ <script>
+  function cargarTablero(){
+   crearTablero();
+   generarBombas(minas);
+   bombasAlrededor(minas);
+  }
+ </script>
+ 
+
+</html>
